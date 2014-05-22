@@ -32,10 +32,7 @@ protected static LandFactoryHandler lfHandler;
         new Connection().execute();//to create a connection with the tracker
 
         //end of create connection
-
-
     }
-
 
     private class Connection extends AsyncTask {
 
@@ -60,10 +57,6 @@ protected static LandFactoryHandler lfHandler;
             Log.d("HTTPCLIENT", e.getLocalizedMessage());
         }
     }
-
-
-
-
 
 
 
