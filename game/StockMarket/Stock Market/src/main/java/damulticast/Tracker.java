@@ -45,7 +45,7 @@ public class Tracker implements Runnable {
     
     /**
      * The listen method for the servicing new peers. 
-     * @throws java.io.IOException In case an unexpected error happens while reading connections
+     * @throws IOException In case an unexpected error happens while reading connections
      */
     public void listen() throws IOException {
         int id = 0;
@@ -92,7 +92,7 @@ public class Tracker implements Runnable {
     
     /**
      * Pings a peer to test if it's still alive
-     * @throws java.io.IOException In case an unexpected error happens while reading connections
+     * @throws IOException In case an unexpected error happens while reading connections
      */
     public void ping(RemoteDevice peer) throws IOException {
         
