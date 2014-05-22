@@ -1,0 +1,68 @@
+<LinearLayout
+        android:orientation="vertical"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="da.stockmarket.stockmarket.LandView"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@drawable/grass">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:weightSum="1"
+            android:layout_weight="0.2">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/leftFactory"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="@drawable/notfilled"
+                android:onClick="leftFactoryClicked"/>
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/rightFactory"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="@drawable/notfilled"
+                android:onClick="rightFactoryClicked"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="New Button"
+                android:id="@+id/button"
+                android:layout_weight="0.5" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="New Button"
+                android:id="@+id/button3"
+                android:layout_weight="0.5" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="New Button"
+                android:id="@+id/button2"
+                android:layout_weight="0.5" />
+        </LinearLayout>
+
+    </LinearLayout>
