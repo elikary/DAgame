@@ -41,53 +41,92 @@ public class LandView extends Activity implements RicartListener {
         lfHandler = new LandFactoryHandler((ImageButton) this.findViewById(R.id.leftFactory), (ImageButton) this.findViewById(R.id.rightFactory));
         FactorySet.populate();
 
-
-
         new Connection().execute();
+
+        // new Listener().execute();
+
+    }
+
+    protected Device device;
+
+
+
+    private class Listener extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object... arg0) {
+            listener();
+
+            return null;
+        }
+
+    }
+
+
+
+    private void listener() {
+
+//        try {
+//            device.run();
+//        } catch (IOException ioe) {
+//            System.err.println("Exception occurred: " + ioe.getMessage());
+//        }
     }
 
     private class Connection extends AsyncTask {
 
         @Override
         protected Object doInBackground(Object... arg0) {
-            connect();
+            connection();
+
             return null;
         }
 
     }
-    protected Device device;
-    private void connect() {
+
+
+
+    private void connection() {
         try {
 
             device = new Device(this);
-            String serverIP = "192.168.56.1";
-            //String serverIP="10.9.145.111";//running a tracker in that localhost(this ip address is recognized by genymotion)
+//            String serverIP = "192.168.56.1";
+            String serverIP="10.9.203.204";//running a tracker in that localhost(this ip address is recognized by genymotion)
             device.establishConnection(serverIP);
-
-
-            /* Say hello to rest of peers */
-            try {
-                device.sayHello();
-            } catch (Exception e) {
-                System.err.println("An error occurred while saying hello: "
-                        + e.getMessage());
-            }
-
-        /* Ask for the current state of the game */
-            try {
-                device.askForState();
-            } catch (IOException ioe) {
-                System.err.println("Peers couldn't respond to askForState(): "
-                        + ioe.getMessage());
-            }
-            initializeNetworkResource();
 
         } catch (ClientProtocolException e) {
             Log.d("HTTPCLIENT", e.getLocalizedMessage());
         } catch (IOException e) {
             Log.d("HTTPCLIENT", e.getLocalizedMessage());
         }
+
+        /* Start listening to P2P communication */
+        Thread t = new Thread(device);
+        t.start();
+
+        /* Say hello to rest of peers */
+        try {
+            device.sayHello();
+        } catch (Exception e) {
+            System.err.println("An error occurred while saying hello: "
+                    + e.getMessage());
+        }
+
+        /* Ask for the current state of the game */
+        try {
+            device.askForState();
+        } catch (IOException ioe) {
+            System.err.println("Peers couldn't respond to askForState(): "
+                    + ioe.getMessage());
+        }
+
+        initializeNetworkResource();
+
+
+
+        //  new Connection().execute();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -299,7 +338,7 @@ public class LandView extends Activity implements RicartListener {
         HashMap<String, Integer> values = device.getSharedResources().getValues();
         if(values.isEmpty()) {
             //initializeNetworkResource();
-            Toast.makeText(getApplicationContext(), "Initializing Network", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "Initializing Network", Toast.LENGTH_LONG).show();
         }else
             printSharedValues(values);
         try {
@@ -309,7 +348,7 @@ public class LandView extends Activity implements RicartListener {
             if (PlayerResources.dairyAmount != 0) device.lockResource("DAIRY");
             if (PlayerResources.beerAmount != 0) device.lockResource("BEER");
         }catch (Exception e){
-            Toast.makeText(getApplicationContext(), "You Dumb, Don't request lock again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "You Dumb, Don't request lock again!"+ e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -338,10 +377,20 @@ public class LandView extends Activity implements RicartListener {
     }
 
     public void initializeNetworkResource(){
-        device.addNewResource("BEER", 0);
-        device.addNewResource("FOOD", 0);
-        device.addNewResource("METAL", 0);
-        device.addNewResource("WOOD", 0);
-        device.addNewResource("DAIRY", 0);
+        if(!device.getSharedResources().getValues().containsKey("BEER")) {
+            device.addNewResource("BEER", 0);
+        }
+        if(!device.getSharedResources().getValues().containsKey("FOOD")) {
+            device.addNewResource("FOOD", 0);
+        }
+        if(!device.getSharedResources().getValues().containsKey("METAL")) {
+            device.addNewResource("METAL", 0);
+        }
+        if(!device.getSharedResources().getValues().containsKey("WOOD")) {
+            device.addNewResource("WOOD", 0);
+        }
+        if(!device.getSharedResources().getValues().containsKey("DAIRY")) {
+            device.addNewResource("DAIRY", 0);
+        }
     }
 }
