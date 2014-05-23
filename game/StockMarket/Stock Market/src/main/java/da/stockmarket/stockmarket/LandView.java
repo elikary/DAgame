@@ -64,6 +64,24 @@ public class LandView extends Activity implements RicartListener {
             //String serverIP="10.9.145.111";//running a tracker in that localhost(this ip address is recognized by genymotion)
             device.establishConnection(serverIP);
 
+
+            /* Say hello to rest of peers */
+            try {
+                device.sayHello();
+            } catch (Exception e) {
+                System.err.println("An error occurred while saying hello: "
+                        + e.getMessage());
+            }
+
+        /* Ask for the current state of the game */
+            try {
+                device.askForState();
+            } catch (IOException ioe) {
+                System.err.println("Peers couldn't respond to askForState(): "
+                        + ioe.getMessage());
+            }
+            initializeNetworkResource();
+
         } catch (ClientProtocolException e) {
             Log.d("HTTPCLIENT", e.getLocalizedMessage());
         } catch (IOException e) {
@@ -280,7 +298,7 @@ public class LandView extends Activity implements RicartListener {
 
         HashMap<String, Integer> values = device.getSharedResources().getValues();
         if(values.isEmpty()) {
-            initializeNetworkResource();
+            //initializeNetworkResource();
             Toast.makeText(getApplicationContext(), "Initializing Network", Toast.LENGTH_LONG).show();
         }else
             printSharedValues(values);
