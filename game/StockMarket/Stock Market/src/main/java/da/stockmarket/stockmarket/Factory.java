@@ -10,7 +10,7 @@ public class Factory {
     public int wood;
     public int dairy;
 
-    public Factory(String name, int imageResId, int goldAmount, int beerAmount, int foodAmount, int metalAmount, int wood, int dairy) {
+    public Factory(String name, int imageResId, int goldAmount, int foodAmount, int beerAmount, int metalAmount, int wood, int dairy) {
         this.goldAmount = goldAmount;
         this.beerAmount = beerAmount;
         this.foodAmount = foodAmount;

@@ -20,20 +20,9 @@ import java.util.List;
 
 public class FactoryListActivity extends Activity {
 
-    protected static boolean whichFactory;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        whichFactory = getIntent().getBooleanExtra("whichFactory", false);
-
-
-//        android.util.TypedValue value = new android.util.TypedValue();
-//        boolean b = getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, value, true);
-//        String s = TypedValue.coerceToString(value.type, value.data);
-//        android.util.DisplayMetrics metrics = new android.util.DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-//        float ret = value.getDimension(metrics);
-
 
         setContentView(R.layout.activity_factory_list);
 
@@ -48,7 +37,7 @@ public class FactoryListActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 //final String item = (String) parent.getItemAtPosition(position);
-                if(FactoryListActivity.whichFactory)
+                if (!LandView.whichFactory)
                     LandView.lfHandler.setLeftLandFactory(FactorySet.presetFactoryList.get(position));
                 else
                     LandView.lfHandler.setRightLandFactory(FactorySet.presetFactoryList.get(position));

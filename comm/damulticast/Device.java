@@ -41,6 +41,7 @@ public class Device implements Runnable {
     /**
      * Listening thread for incoming messages. 
      */
+    @Override
     public void run() {
         try {
             this.listen();
@@ -103,7 +104,7 @@ public class Device implements Runnable {
      * method should not be edited anymore.
      * @throws IOException In case an unexpected error happens while reading connections
      */
-    public void listen() throws IOException {
+    private void listen() throws IOException {
         
         while(true) {
             Socket peerSocket = serverSocket.accept();
@@ -260,10 +261,7 @@ public class Device implements Runnable {
                 }
                 long tj = ctj.getTimeInMillis();
                                 
-                if (lock == null) {
-                    /* TODO: This shouldn't happen */
-                    System.err.println("Resource does not exist: " + key);
-                } else if (lock.getState().equals("HELD") 
+                if (lock.getState().equals("HELD") 
                         || (lock.getState().equals("WANTED") && (tj < t))) {
                     lock.getRequestQueue().add(new ResourceRequest(peer, t));
                 } else {
@@ -300,18 +298,24 @@ public class Device implements Runnable {
                 /* We send the event to the main device so it knows we have
                  * held the device.
                  */
-                listener.eventListener("Resource held " + key + "! :) ");
+                listener.lockGranted(key);
             }
      
-        /* ping */
+        /* ping, the pings include the list of peers the tracker considers have
+         * disconnected */
         
         } else if (m.getHeader().equals("ping")) {
-            /* For the moment the message is just ignored */
-            ;
+            
+            StringTokenizer st = new StringTokenizer(m.getMessage(), "|");
+            while (st.hasMoreTokens()) {
+                RemoteDevice dpeer = lookUpPeer(Integer.parseInt(st.nextToken()));
+                peers.remove(dpeer);
+                System.err.println("Tracker has dismissed peer " + dpeer.getId());
+            }
         
-        /* syncreply-askstate */
+        /* reply-askstate */
         
-        } else if (m.getHeader().equals("syncreply-askstate")) {
+        } else if (m.getHeader().equals("reply-askstate")) {
             if (!m.getMessage().equals("")) {
                 StringTokenizer st = new StringTokenizer(m.getMessage(), "&");
                 while (st.hasMoreTokens()) {
@@ -319,9 +323,39 @@ public class Device implements Runnable {
                     String key = st2.nextToken();
                     String value = st2.nextToken();
                     System.out.println("Adding new resource: " + key + "=" + value);
-                    sharedResources.setValue(key, Integer.parseInt(value));
+                    if (sharedResources.getValues().containsKey(key)) {
+                        System.err.println("Resource " + key + " was already created,"
+                            + " it will not be overwritten.");
+                    } else {
+                        sharedResources.setValue(key, Integer.parseInt(value));
+                        sharedResources.initLock(key);
+                    }
+                    /* We notify the application in case it is useful */
+                    listener.resourceUpdate(key, Integer.parseInt(value));
+                }
+            }
+            
+        /* update_resource */
+        
+        } else if (m.getHeader().equals("update_resource")) {
+            StringTokenizer st = new StringTokenizer(m.getMessage(), "|");
+            try {
+                String key = st.nextToken();
+                String value = st.nextToken();
+                
+                /* By setting the value we create it in case we don't have
+                 * created it yet. */
+                sharedResources.setValue(key, Integer.parseInt(value));
+                System.out.println("Peer " + peer.getId() + " updated resource"
+                    + " " + key + "=" + value);
+                /* But we need to check that the lock is initialized. */
+                if (sharedResources.getLock(key) == null) {
                     sharedResources.initLock(key);
                 }
+            } catch (NoSuchElementException nsee) {
+                System.err.println("Incorrect format for lock resource.");
+            } catch (NumberFormatException nfe) {
+                System.err.println("Incorrect format for lock resource.");
             }
         }
     }
@@ -347,7 +381,7 @@ public class Device implements Runnable {
         
         if (m.getHeader().equals("sync-askstate")) {
             /* Update the number of replies received */ 
-            String replyHeader = "syncreply-askstate";
+            String replyHeader = "reply-askstate";
             String replyMessage = "";
             HashMap<String, Integer> resources = new HashMap<String, Integer>(sharedResources.getValues());
             
@@ -471,8 +505,7 @@ public class Device implements Runnable {
      * @throws UnkownHostException This shouldn't happen when using IP addresses.
      * 
      */
-    public void lockResource(String key) throws NullPointerException, 
-            SocketTimeoutException, UnknownHostException, IOException {
+    public void lockResource(String key) throws NullPointerException {
         ResourceState lock = getSharedResources().getLock(key);
         if (lock == null) {
             throw new NullPointerException("Resource does not exist: " + key);
@@ -488,8 +521,20 @@ public class Device implements Runnable {
         String header = "lock_resource";
         String message = key + "|" + timestamp.getTimeInMillis();
         ArrayList<RemoteDevice> peersCopy = new ArrayList<RemoteDevice>(peers);
-        for (RemoteDevice peer : peersCopy) {
-            send(new Message(peer, header, message));
+        
+        /* If peers copy is emtpy grant the lock right away */
+        if (peersCopy.isEmpty()) {
+            lock.setState("HELD");
+            listener.lockGranted(key);
+        } else for (RemoteDevice peer : peersCopy) {
+            try {
+                send(new Message(peer, header, message));
+            } catch (IOException ioe) {
+                System.err.println("Could not reach peer: " + peer.getId() + ", "
+                        + ioe.getMessage());
+                /* The algorithm will ignore the peer for the voting */
+                lock.setAcks(lock.getAcks() + 1);
+            }
         }
     }
     
@@ -529,6 +574,37 @@ public class Device implements Runnable {
     }
     
     /**
+     * Updates the value of a resource, and sends the corresponding messages to the
+     * rest of the peers. 
+     * The message has the header 'update_resource'.
+     * @param key The id of the resource
+     * @throws NullPointerException If the resource does not exist, or it is not
+     * held by the device.
+     */
+    public void updateResource(String key, int value) throws NullPointerException, 
+            UnknownHostException {
+        ResourceState lock = getSharedResources().getLock(key);
+        if (lock == null) {
+            throw new NullPointerException("Resource does not exist: " + key);
+        } else if (!lock.getState().equals("HELD")) {
+            throw new NullPointerException("The resource is not being held.");
+        }
+        
+        getSharedResources().setValue(key, value);
+        
+        ArrayList<RemoteDevice> peersCopy = new ArrayList<RemoteDevice>(peers);
+        for (RemoteDevice peer : peersCopy) {
+            Message m = new Message(peer, "update_resource", key + "|" + value);
+            try {
+                send(m);
+            } catch (IOException ioe) {
+                System.err.println("The resource update could not be sent to "
+                    + "the peer " + peer.getId());
+            }
+        }
+    }
+    
+    /**
      * Asks for the state of the game to one of the peers. If a peer does not 
      * respond it tries with the next one. If all the peers don't respond the
      * the corresponding exception is thrown.
@@ -538,7 +614,7 @@ public class Device implements Runnable {
     public void askForState() throws SocketTimeoutException, IOException {
         
         /* Ask the game's state to the peers synchronously until one of them 
-         * replies. If a peer doesn't reply get him out of the peerlist */
+         * replies. */
         String header = "sync-askstate";
         String message = "";
         ArrayList<RemoteDevice> peersCopy = new ArrayList<RemoteDevice>(peers);
@@ -548,17 +624,13 @@ public class Device implements Runnable {
                 /* As soon as we receive a succesful reply, break */
                  break;
             } catch (SocketTimeoutException ste) {
-                System.err.println("Peer " + peer.getId() + " is not responding"
-                    + " it will be disconnected");
-                peers.remove(peer);
+                System.err.println("Peer " + peer.getId() + " is not responding.");
                 /* If it's the last peer throw the exception */
                 if (peers.isEmpty()) {
                     throw ste;
                 }
             } catch (IOException ioe) {
-                System.err.println("Peer " + peer.getId() + " is not responding"
-                    + " it will be disconnected");
-                peers.remove(peer);
+                System.err.println("Peer " + peer.getId() + " is not responding.");
                 /* If it's the last peer throw the exception */
                 if (peers.isEmpty()) {
                     throw ioe;

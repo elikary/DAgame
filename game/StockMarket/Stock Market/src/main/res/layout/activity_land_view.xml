@@ -39,30 +39,107 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.9">
+            android:background="@drawable/main_page_border"
+            android:layout_weight="0.9"
+            android:layout_gravity="center_horizontal">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="New Button"
-                android:id="@+id/button"
-                android:layout_weight="0.5" />
+            <ImageView
+                android:id="@+id/beer"
+                android:layout_width="@dimen/abc_action_bar_title_text_size"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/beer"></ImageView>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="New Button"
-                android:id="@+id/button3"
-                android:layout_weight="0.5" />
+            <TextView
+                android:id="@+id/mbeer_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="15dp"
+                android:text="30"
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="New Button"
-                android:id="@+id/button2"
-                android:layout_weight="0.5" />
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+            <ImageView
+                android:id="@+id/food"
+                android:layout_width="@dimen/abc_action_bar_title_text_size"
+                android:layout_height="wrap_content"
+
+
+                android:src="@drawable/food"></ImageView>
+
+            <TextView
+                android:id="@+id/mfood_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+
+                android:text="30"
+                android:layout_marginRight="15dp"
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+            <ImageView
+                android:id="@+id/dairy"
+                android:layout_width="@dimen/abc_action_bar_title_text_size"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/dairy"></ImageView>
+
+            <TextView
+                android:id="@+id/mdairy_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+
+                android:text="30"
+                android:layout_marginRight="15dp"
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+            <ImageView
+                android:id="@+id/metal"
+                android:layout_width="@dimen/abc_action_bar_title_text_size"
+                android:layout_height="wrap_content"
+
+
+                android:src="@drawable/metal"></ImageView>
+
+            <TextView
+                android:id="@+id/mmetal_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="15dp"
+                android:text="30"
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+            <ImageView
+                android:id="@+id/wood"
+                android:layout_width="@dimen/abc_action_bar_title_text_size"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/wood"></ImageView>
+
+            <TextView
+                android:id="@+id/mwood_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="15dp"
+                android:text="30"
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+            <ImageView
+                android:id="@+id/gold"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/ic_launcher"></ImageView>
+
+            <TextView
+                android:id="@+id/mgold_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="15dp"
+                android:text="30"
+                android:textSize="@dimen/abc_action_bar_default_height"></TextView>
         </LinearLayout>
 
     </LinearLayout>
