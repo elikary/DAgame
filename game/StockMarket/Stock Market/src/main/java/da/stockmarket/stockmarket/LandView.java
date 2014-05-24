@@ -15,6 +15,7 @@ import android.widget.Toast;
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Timer;
@@ -43,35 +44,10 @@ public class LandView extends Activity implements RicartListener {
 
         new Connection().execute();
 
-        // new Listener().execute();
-
     }
 
     protected Device device;
 
-
-
-    private class Listener extends AsyncTask {
-
-        @Override
-        protected Object doInBackground(Object... arg0) {
-            listener();
-
-            return null;
-        }
-
-    }
-
-
-
-    private void listener() {
-
-//        try {
-//            device.run();
-//        } catch (IOException ioe) {
-//            System.err.println("Exception occurred: " + ioe.getMessage());
-//        }
-    }
 
     private class Connection extends AsyncTask {
 
@@ -91,7 +67,7 @@ public class LandView extends Activity implements RicartListener {
 
             device = new Device(this);
 //            String serverIP = "192.168.56.1";
-            String serverIP="10.9.203.204";//running a tracker in that localhost(this ip address is recognized by genymotion)
+            String serverIP="172.20.10.3";//running a tracker in that localhost(this ip address is recognized by genymotion)
             device.establishConnection(serverIP);
 
         } catch (ClientProtocolException e) {
@@ -160,7 +136,7 @@ public class LandView extends Activity implements RicartListener {
                             public void run() {
                                 //factory just clicked
                                 //seeking resources
-                                System.out.println("left called");
+                                //System.out.println("left called");
                                 if(leftLandTimer == -1) {
                                     PlayerResources.beerAmount += LandFactoryHandler.leftFactory.beerAmount;
                                     PlayerResources.dairyAmount += LandFactoryHandler.leftFactory.dairy;
@@ -168,7 +144,7 @@ public class LandView extends Activity implements RicartListener {
                                     PlayerResources.metalAmount += LandFactoryHandler.leftFactory.metalAmount;
                                     PlayerResources.woodAmount += LandFactoryHandler.leftFactory.wood;
                                     leftLandTimer = 0;
-                                    updateResrouceView();
+                                    updateResourceView();
                                 }
                                 if(leftLandTimer == 0) {
                                     if(PlayerResources.beerAmount > -1 &&
@@ -203,7 +179,7 @@ public class LandView extends Activity implements RicartListener {
                             public void run() {
                                 //factory just clicked
                                 //seeking resources
-                                System.out.println("right called");
+                                //System.out.println("right called");
                                 if(rightLandTimer == -1) {
                                     PlayerResources.beerAmount += LandFactoryHandler.rightFactory.beerAmount;
                                     PlayerResources.dairyAmount += LandFactoryHandler.rightFactory.dairy;
@@ -211,7 +187,7 @@ public class LandView extends Activity implements RicartListener {
                                     PlayerResources.metalAmount += LandFactoryHandler.rightFactory.metalAmount;
                                     PlayerResources.woodAmount += LandFactoryHandler.rightFactory.wood;
                                     rightLandTimer = 0;
-                                    updateResrouceView();
+                                    updateResourceView();
                                 }
                                 if(rightLandTimer == 0) {
                                     if(PlayerResources.beerAmount > -1 &&
@@ -241,7 +217,8 @@ public class LandView extends Activity implements RicartListener {
 
     }
 
-    protected void updateResrouceView(){
+    protected void updateResourceView(){
+        System.out.println("update resource");
         ((TextView) thisObject.findViewById(R.id.mbeer_amount)).setText(Integer.toString(PlayerResources.beerAmount));
         ((TextView) thisObject.findViewById(R.id.mfood_amount)).setText(Integer.toString(PlayerResources.foodAmount));
         ((TextView) thisObject.findViewById(R.id.mmetal_amount)).setText(Integer.toString(PlayerResources.metalAmount));
@@ -285,52 +262,80 @@ public class LandView extends Activity implements RicartListener {
         System.out.println("Lock Recieved : " +lock);
         int quantity = device.getSharedResources().getValue(lock);
         if(lock.equalsIgnoreCase("WOOD")) {
+
             if (quantity + PlayerResources.woodAmount >= 0){
+                if(PlayerResources.woodAmount > 0) PlayerResources.goldAmount += PlayerResources.woodAmount;
+                    //Toast.makeText(getApplicationContext(),"+" +Integer.toString(PlayerResources.woodAmount)+" Coins", Toast.LENGTH_SHORT).show();}
                 quantity += PlayerResources.woodAmount;
                 PlayerResources.woodAmount = 0;
             }else{
                 PlayerResources.woodAmount += quantity;
                 quantity = 0;
+                PlayerResources.goldAmount -= 0.3*PlayerResources.woodAmount;
+                PlayerResources.woodAmount = 0;
             }
         }else if(lock.equalsIgnoreCase("FOOD")) {
             if (quantity + PlayerResources.foodAmount >= 0){
+                if(PlayerResources.foodAmount > 0) PlayerResources.goldAmount += PlayerResources.foodAmount;
                 quantity += PlayerResources.foodAmount;
                 PlayerResources.foodAmount = 0;
             }else{
                 PlayerResources.foodAmount += quantity;
                 quantity = 0;
+                PlayerResources.goldAmount -= 0.3*PlayerResources.foodAmount;
+                PlayerResources.foodAmount = 0;
             }
         }else if(lock.equalsIgnoreCase("BEER")) {
             if (quantity + PlayerResources.beerAmount >= 0){
+                if(PlayerResources.beerAmount > 0) PlayerResources.goldAmount += PlayerResources.beerAmount;
                 quantity += PlayerResources.beerAmount;
                 PlayerResources.beerAmount = 0;
             }else{
                 PlayerResources.beerAmount += quantity;
                 quantity = 0;
+                PlayerResources.goldAmount -= 0.3*PlayerResources.beerAmount;
+                PlayerResources.beerAmount = 0;
             }
         }else if(lock.equalsIgnoreCase("METAL")) {
             if (quantity + PlayerResources.metalAmount >= 0){
+                if(PlayerResources.metalAmount > 0) PlayerResources.goldAmount += 1.4*PlayerResources.metalAmount;
                 quantity += PlayerResources.metalAmount;
                 PlayerResources.metalAmount = 0;
             }else{
                 PlayerResources.metalAmount += quantity;
                 quantity = 0;
+                PlayerResources.goldAmount -= 0.3*PlayerResources.metalAmount;
+                PlayerResources.metalAmount = 0;
             }
         }else if(lock.equalsIgnoreCase("DAIRY")) {
             if (quantity + PlayerResources.dairyAmount >= 0){
+                if(PlayerResources.dairyAmount > 0) PlayerResources.goldAmount += PlayerResources.dairyAmount;
                 quantity += PlayerResources.dairyAmount;
                 PlayerResources.dairyAmount = 0;
             }else{
                 PlayerResources.dairyAmount += quantity;
                 quantity = 0;
+                PlayerResources.goldAmount -= 0.3*PlayerResources.dairyAmount;
+                PlayerResources.dairyAmount = 0;
             }
         }
 
         try{
             device.updateResource(lock, quantity);
+            device.releaseResource(lock);
         } catch (UnknownHostException e) {
             Toast.makeText(getApplicationContext(), "It seems that your peer dude crashed!", Toast.LENGTH_LONG).show();
+        } catch (SocketTimeoutException e) {
+            Toast.makeText(getApplicationContext(), "It seems that your peer dude crashed!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "It seems that your peer dude crashed!", Toast.LENGTH_LONG).show();
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateResourceView();
+            }
+        });
     }
 
     private void requestForResource(){
@@ -341,25 +346,33 @@ public class LandView extends Activity implements RicartListener {
 //            Toast.makeText(getApplicationContext(), "Initializing Network", Toast.LENGTH_LONG).show();
         }else
             printSharedValues(values);
-        try {
-            if (PlayerResources.woodAmount != 0) device.lockResource("WOOD");
-            if (PlayerResources.metalAmount != 0) device.lockResource("METAL");
-            if (PlayerResources.foodAmount != 0) device.lockResource("FOOD");
-            if (PlayerResources.dairyAmount != 0) device.lockResource("DAIRY");
-            if (PlayerResources.beerAmount != 0) device.lockResource("BEER");
-        }catch (Exception e){
-            Toast.makeText(getApplicationContext(), "You Dumb, Don't request lock again!"+ e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
 
+        class RequestForLock extends AsyncTask {
+
+            @Override
+            protected Object doInBackground(Object... arg0) {
+                try {
+                    //System.out.println("inside lock");
+                    //System.out.println("inside lock");
+                    //System.out.println("inside lock");
+                    if (PlayerResources.woodAmount != 0){device.lockResource("WOOD"); System.out.println("request for wood");}
+                    if (PlayerResources.metalAmount != 0){device.lockResource("METAL"); System.out.println("request for metal");}
+                    if (PlayerResources.foodAmount != 0){device.lockResource("FOOD"); System.out.println("request for food");}
+                    if (PlayerResources.dairyAmount != 0){device.lockResource("DAIRY"); System.out.println("request for dairy");}
+                    if (PlayerResources.beerAmount != 0){device.lockResource("BEER"); System.out.println("request for beer");}
+                }catch (Exception e){
+                    e.printStackTrace();
+                    //Toast.makeText(getApplicationContext(), "You Dumb, Don't request lock again!"+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                return null;
+            }
+
+        }
+        AsyncTask rfl = new RequestForLock().execute();
     }
     public void resourceUpdate(String resource, int value) {
         System.out.println(resource);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateResrouceView();
-            }
-        });
+
     }
 
     private void printSharedValues(HashMap<String, Integer> values) {
