@@ -44,6 +44,7 @@ public class LandView extends Activity implements RicartListener {
 
         new Connection().execute();
 
+
     }
 
     protected Device device;
@@ -66,8 +67,8 @@ public class LandView extends Activity implements RicartListener {
         try {
 
             device = new Device(this);
-//            String serverIP = "192.168.56.1";
-            String serverIP="172.20.10.3";//running a tracker in that localhost(this ip address is recognized by genymotion)
+            String serverIP = "192.168.56.1";
+//            String serverIP="172.20.10.3";//running a tracker in that localhost(this ip address is recognized by genymotion)
             device.establishConnection(serverIP);
 
         } catch (ClientProtocolException e) {
@@ -211,7 +212,8 @@ public class LandView extends Activity implements RicartListener {
                 rightLandProduction.scheduleAtFixedRate(task, 0, 1000);
             }
         }
-
+        printSharedValues();
+        updateResourceView();
 
 
 
@@ -220,11 +222,16 @@ public class LandView extends Activity implements RicartListener {
     protected void updateResourceView(){
         System.out.println("update resource");
         ((TextView) thisObject.findViewById(R.id.mbeer_amount)).setText(Integer.toString(PlayerResources.beerAmount));
+        ((TextView) thisObject.findViewById(R.id.mbeer_amountglobal)).setText(Integer.toString(GlobalObjects.beerAmount));
         ((TextView) thisObject.findViewById(R.id.mfood_amount)).setText(Integer.toString(PlayerResources.foodAmount));
+        ((TextView) thisObject.findViewById(R.id.mfood_amountglobal)).setText(Integer.toString(GlobalObjects.foodAmount));
         ((TextView) thisObject.findViewById(R.id.mmetal_amount)).setText(Integer.toString(PlayerResources.metalAmount));
+        ((TextView) thisObject.findViewById(R.id.mmetal_amountglobal)).setText(Integer.toString(GlobalObjects.metalAmount));
         ((TextView) thisObject.findViewById(R.id.mgold_amount)).setText(Integer.toString(PlayerResources.goldAmount));
         ((TextView) thisObject.findViewById(R.id.mwood_amount)).setText(Integer.toString(PlayerResources.woodAmount));
+        ((TextView) thisObject.findViewById(R.id.mwood_amountglobal)).setText(Integer.toString(GlobalObjects.woodAmount));
         ((TextView) thisObject.findViewById(R.id.mdairy_amount)).setText(Integer.toString(PlayerResources.dairyAmount));
+        ((TextView) thisObject.findViewById(R.id.mdairy_amountglobal)).setText(Integer.toString(GlobalObjects.dairyAmount));
     }
 
     protected static boolean leftInitiated = false;
@@ -340,12 +347,8 @@ public class LandView extends Activity implements RicartListener {
 
     private void requestForResource(){
 
-        HashMap<String, Integer> values = device.getSharedResources().getValues();
-        if(values.isEmpty()) {
-            //initializeNetworkResource();
-//            Toast.makeText(getApplicationContext(), "Initializing Network", Toast.LENGTH_LONG).show();
-        }else
-            printSharedValues(values);
+
+            printSharedValues();
 
         class RequestForLock extends AsyncTask {
 
@@ -375,16 +378,22 @@ public class LandView extends Activity implements RicartListener {
 
     }
 
-    private void printSharedValues(HashMap<String, Integer> values) {
+    private void printSharedValues() {
+        HashMap<String, Integer> values = device.getSharedResources().getValues();
         for (String key : values.keySet()) {
+            if(key.equalsIgnoreCase("Beer"))
+                GlobalObjects.beerAmount = values.get(key);
+            else if(key.equalsIgnoreCase("food"))
+                GlobalObjects.foodAmount = values.get(key);
+            else if(key.equalsIgnoreCase("wood"))
+                GlobalObjects.woodAmount = values.get(key);
+            else if(key.equalsIgnoreCase("metal"))
+                GlobalObjects.metalAmount = values.get(key);
+            else if(key.equalsIgnoreCase("dairy"))
+                GlobalObjects.dairyAmount = values.get(key);
+
             String entry = key + ":" + values.get(key);
-            HashMap<String, ResourceState> locks = device
-                    .getSharedResources().getLocks();
-            try {
-                entry += ":" + locks.get(key).getState();
-            } catch (NullPointerException npe) {
-                entry += ":LOCK_NOT_INITIALIZED";
-            }
+
             System.out.println(entry);
         }
     }

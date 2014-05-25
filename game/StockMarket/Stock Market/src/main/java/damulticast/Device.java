@@ -165,7 +165,6 @@ public class Device implements Runnable {
      * @throws SocketTimeoutException If during the communication a message takes
      * more than 5 seconds to get through.
      * @throws IOException If an IO error happens during the communication
-     * @throws UnkownHostException This shouldn't happen when using IP addresses.
      */
     public synchronized void send(Message m) throws SocketTimeoutException,
             IOException, UnknownHostException {
@@ -508,7 +507,6 @@ public class Device implements Runnable {
      * @throws SocketTimeoutException If during the communication a message takes
      * more than 5 seconds to get through.
      * @throws IOException If an IO error happens during the communication
-     * @throws UnkownHostException This shouldn't happen when using IP addresses.
      * 
      */
     public void lockResource(String key) throws NullPointerException {
@@ -556,7 +554,6 @@ public class Device implements Runnable {
      * @throws SocketTimeoutException If during the communication a message takes
      * more than 5 seconds to get through.
      * @throws IOException If an IO error happens during the communication
-     * @throws UnkownHostException This shouldn't happen when using IP addresses.
      */
     public void releaseResource(String key) throws NullPointerException, 
             SocketTimeoutException, UnknownHostException, IOException {

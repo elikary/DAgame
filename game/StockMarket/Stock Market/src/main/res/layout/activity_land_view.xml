@@ -10,13 +10,110 @@
         tools:context="da.stockmarket.stockmarket.LandView"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:background="@drawable/grass">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/main_page_border"
+        android:layout_weight="0.9"
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/beerglobal"
+            android:layout_width="@dimen/abc_action_bar_title_text_size"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="2dp"
+            android:src="@drawable/beer"></ImageView>
+
+        <TextView
+            android:id="@+id/mbeer_amountglobal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="15dp"
+            android:text="30"
+
+            android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+        <ImageView
+            android:id="@+id/foodglobal"
+            android:layout_width="@dimen/abc_action_bar_title_text_size"
+            android:layout_height="wrap_content"
+
+
+            android:src="@drawable/food"></ImageView>
+
+        <TextView
+            android:id="@+id/mfood_amountglobal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+
+            android:text="30"
+            android:layout_marginRight="15dp"
+            android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+        <ImageView
+            android:id="@+id/dairyglobal"
+            android:layout_width="@dimen/abc_action_bar_title_text_size"
+            android:layout_height="wrap_content"
+
+            android:src="@drawable/dairy"></ImageView>
+
+        <TextView
+            android:id="@+id/mdairy_amountglobal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+
+            android:text="30"
+            android:layout_marginRight="15dp"
+            android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+        <ImageView
+            android:id="@+id/metalglobal"
+            android:layout_width="@dimen/abc_action_bar_title_text_size"
+            android:layout_height="wrap_content"
+
+
+            android:src="@drawable/metal"></ImageView>
+
+        <TextView
+            android:id="@+id/mmetal_amountglobal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="15dp"
+            android:text="30"
+            android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+        <ImageView
+            android:id="@+id/woodglobal"
+            android:layout_width="@dimen/abc_action_bar_title_text_size"
+            android:layout_height="wrap_content"
+
+            android:src="@drawable/wood"></ImageView>
+
+        <TextView
+            android:id="@+id/mwood_amountglobal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="15dp"
+            android:text="0"
+            android:textSize="@dimen/abc_action_bar_default_height"></TextView>
+
+        <ImageView
+            android:id="@+id/globe"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+
+            android:src="@drawable/globe"></ImageView>
+
+    </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:weightSum="1"
-            android:layout_weight="0.2">
+            android:layout_weight="0.5">
 
             <ImageButton
                 android:layout_width="match_parent"
