@@ -374,6 +374,19 @@ public class LandView extends Activity implements RicartListener {
         AsyncTask rfl = new RequestForLock().execute();
     }
     public void resourceUpdate(String resource, int value) {
+        printSharedValues();
+        if(resource.equalsIgnoreCase("Beer"))
+            GlobalObjects.beerAmount = value;
+        else if(resource.equalsIgnoreCase("food"))
+            GlobalObjects.foodAmount = value;
+        else if(resource.equalsIgnoreCase("wood"))
+            GlobalObjects.woodAmount = value;
+        else if(resource.equalsIgnoreCase("metal"))
+            GlobalObjects.metalAmount = value;
+        else if(resource.equalsIgnoreCase("dairy"))
+            GlobalObjects.dairyAmount = value;
+        updateResourceView();
+
         System.out.println(resource);
 
     }
