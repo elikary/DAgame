@@ -138,6 +138,8 @@ public class LandView extends Activity implements RicartListener {
                                 //factory just clicked
                                 //seeking resources
                                 //System.out.println("left called");
+                                printSharedValues();
+                                updateResourceView();
                                 if(leftLandTimer == -1) {
                                     PlayerResources.beerAmount += LandFactoryHandler.leftFactory.beerAmount;
                                     PlayerResources.dairyAmount += LandFactoryHandler.leftFactory.dairy;
@@ -181,6 +183,8 @@ public class LandView extends Activity implements RicartListener {
                                 //factory just clicked
                                 //seeking resources
                                 //System.out.println("right called");
+                                printSharedValues();
+                                updateResourceView();
                                 if(rightLandTimer == -1) {
                                     PlayerResources.beerAmount += LandFactoryHandler.rightFactory.beerAmount;
                                     PlayerResources.dairyAmount += LandFactoryHandler.rightFactory.dairy;
@@ -373,18 +377,10 @@ public class LandView extends Activity implements RicartListener {
         }
         AsyncTask rfl = new RequestForLock().execute();
     }
+
     public void resourceUpdate(String resource, int value) {
+        System.out.println("in resourceUpdate");
         printSharedValues();
-        if(resource.equalsIgnoreCase("Beer"))
-            GlobalObjects.beerAmount = value;
-        else if(resource.equalsIgnoreCase("food"))
-            GlobalObjects.foodAmount = value;
-        else if(resource.equalsIgnoreCase("wood"))
-            GlobalObjects.woodAmount = value;
-        else if(resource.equalsIgnoreCase("metal"))
-            GlobalObjects.metalAmount = value;
-        else if(resource.equalsIgnoreCase("dairy"))
-            GlobalObjects.dairyAmount = value;
         updateResourceView();
 
         System.out.println(resource);
